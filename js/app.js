@@ -197,10 +197,11 @@ function createModal() {
 // updates the info on the Modal to pertain to the card that the user indicated 
 // they wanted to see.
 // called when a card is clicked and when a side scroller button on the modal is clicked
-function changeModal(t){
+function changeModal(id){
+
 	document.querySelector(".modal-container").style.display = 'block';
 	
-	var id = t.id;
+	//var id = t.id;
 	document.querySelector(".modal-container").id = id;
 	document.getElementById("name").innerHTML = 
 		cardArray[id].first + " " + cardArray[id].last;
@@ -213,30 +214,9 @@ function changeModal(t){
 
 }
 
+// close Modal
 function hideModal(){
 	document.querySelector(".modal-container").style.display = 'none';
-}
-
-// when a click happebs, figure out what action needs to take placehold
-// if the 
-function eventRouter(t){
-
-	if (t.className == "card")
-		changeModal(t);
-	else if (t.className == "card-info-container" || t.className == "card-img-container")
-		changeModal(t.parentNode);
-	else if (t.className == "card-name cap" || t.className == "card-text" 
-				|| t.className == "card-text cap" || t.className == "card-img" )
-		changeModal(t.parentNode.parentNode);
-	else if (t.className == "modal-close-btn" || t.parentNode.className == "modal-close-btn")
-		hideModal();
-	else if (t.className == "modal-prev btn"){
-//		console.log(t.parentNode.parentNode);
-	//	changeModal(t.parentNode.parentNode.siblingBelow);
-
-	}
-	// else if side buttons
-	//else nothing
 }
 
 
@@ -244,6 +224,43 @@ function eventRouter(t){
 //  EVENT LISTENERS
 // ------------------------------------------
 gallery.addEventListener('click', event => eventRouter(event.target));
+
+
+// ------------------------------------------
+//  EVENT HELPER FUNCTIONS
+// ------------------------------------------
+// when a click happens, figure out what action needs to take placehold
+// if the 
+function eventRouter(t){
+//console.log(t);
+
+	//user clicked a card, create a modal box
+	if (t.className == "card")
+		changeModal(t.id);
+	else if (t.className == "card-info-container" || t.className == "card-img-container")
+		changeModal(t.parentNode.id);
+	else if (t.className == "card-name cap" || t.className == "card-text" 
+				|| t.className == "card-text cap" || t.className == "card-img" )
+		changeModal(t.parentNode.parentNode.id);
+		
+	// user clicked close modal button
+	else if (t.className == "modal-close-btn" || t.parentNode.className == "modal-close-btn")
+		hideModal();
+	
+	// user clicked a modal box prev or next buttons
+	else if (t.className == "modal-prev btn"){
+		let ID = parseInt(t.parentNode.parentNode.id) - 1;
+		if (ID >= 0) 
+			changeModal(ID);
+	}
+	else if (t.className == "modal-next btn"){
+		let ID = parseInt(t.parentNode.parentNode.id) +1;
+		if (ID <= 11) 
+			changeModal(ID);		
+	}
+
+	//else ignore all other clicks
+}
 
 
 // ------------------------------------------

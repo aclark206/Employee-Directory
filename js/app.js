@@ -68,13 +68,13 @@ function makeCard(person){
 				person.location.city, 
 				cardDiv);
 
-	addCard(person);
+	addCard(person, cardDiv);
 	cardCount++;
 }
 
 // adds the person to the cardArray/virtual card catalog
 // the id of the card div matches the index of the virtual card in the cardArray
-function addCard(person){
+function addCard(person, card){
 
 	//make address string from location object
 	let addressStr = person.location.street + "  " + person.location.city + ", " +
@@ -93,7 +93,8 @@ function addCard(person){
 		phone: person.phone,
 		address: addressStr,
 		birthday: bdayStr,
-		img: person.picture.large
+		img: person.picture.large,
+		cardHandle: card
 	}
 
 	cardArray[cardCount] = newPerson;	
@@ -221,6 +222,54 @@ function hideModal(){
 
 
 // ------------------------------------------
+//  SEARCH HELPER FUNCTIONS
+// ------------------------------------------
+
+function createSearch(){
+	let searchForm = document.createElement('form');
+	searchForm.action = "#";
+	searchForm.method = "GET";
+	let html = 	'<input type="search" id="search-input" class="search-input" placeholder="Search...">';
+	    html += '<input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">';
+	searchForm.innerHTML = html;
+	
+	document.querySelector(".search-container").appendChild(searchForm);
+	
+}
+
+function search(){
+	
+	// get user Search criteria
+	userInput = document.getElementById("search-input").value;
+	console.log("**" + userInput + "***")
+	userInput = userInput.trim();
+	
+	if (userInput.length !== 'undefined' && userInput.length !== 0 ){ // if the search value is empty
+		console.log(userInput.length);
+		userInput = userInput.toLowerCase();
+		console.log("**" + userInput + "***")
+		//compare the search criteria to the Employee Names
+		// If the Employee Name does not match the search, hide the card.
+		cardArray.forEach((person) => {
+			
+			if( !person.first.includes(userInput) && !person.last.includes(userInput))
+				person.cardHandle.style.display = 'none';
+			else
+				person.cardHandle.style.display = 'flex';
+		});
+	}
+	else {
+	// if the search box is empty, make all cards visible
+		cardArray.forEach((person) => {
+			person.cardHandle.style.display = 'flex';
+		});
+	}
+	
+}
+
+
+
+// ------------------------------------------
 //  EVENT LISTENERS
 // ------------------------------------------
 gallery.addEventListener('click', event => eventRouter(event.target));
@@ -263,7 +312,11 @@ function eventRouter(t){
 }
 
 
+
 // ------------------------------------------
 //  Main
 // ------------------------------------------
 createModal();
+createSearch();
+formSubmit = document.querySelector("form");
+formSubmit.addEventListener('submit', search);

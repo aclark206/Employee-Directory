@@ -12,6 +12,7 @@ var cardArray= [{}]; // an Array person objects
 //  FETCH FUNCTIONS
 // ------------------------------------------
 
+// fetches fake personell data in order to construct employee directory cards
 fetchData ('https://randomuser.me/api/?fmt=json&results=12&nat=US')
 	.then(data => data.results.forEach((person, index) => makeCard(person)));
 
@@ -44,8 +45,9 @@ function fetchData(url){
 // ------------------------------------------
 
 
-// creates the employee card html with the data from the passed person object
-// the person object needs to contain:
+// 	makeCard(person)
+// 	creates the employee card html with the data from the passed person object
+// 	the person object needs to contain:
 //			 a name object with first and last attributes
 //			email
 //			location with full address
@@ -53,7 +55,6 @@ function fetchData(url){
 //			phone number
 //			image
 function makeCard(person){
-//console.log(person);
 	// make the card div
 	let cardDiv = document.createElement('div');
 	cardDiv.className = "card";
@@ -72,8 +73,11 @@ function makeCard(person){
 	cardCount++;
 }
 
-// adds the person to the cardArray/virtual card catalog
-// the id of the card div matches the index of the virtual card in the cardArray
+
+
+// 	addCard(person, card)
+// 	adds the person to the cardArray/virtual card catalog
+// 	the id of the card div matches the index of the virtual card in the cardArray
 function addCard(person, card){
 
 	//make address string from location object
@@ -100,9 +104,11 @@ function addCard(person, card){
 	cardArray[cardCount] = newPerson;	
 }
 
-// creates a <div> tag that holds a <img> tag 
-// sets the img src to the passed url
-// appends the div to the passed parentNode
+
+// 	makeImgDiv(url, parentNode)
+// 	creates a <div> tag that holds a <img> tag 
+// 	sets the img src to the passed url
+// 	appends the div to the passed parentNode
 function makeImgDiv(url, parentNode){
 
 	let imgDiv  = document.createElement('div');
@@ -111,8 +117,10 @@ function makeImgDiv(url, parentNode){
 	parentNode.appendChild(imgDiv);
 }
 
-// creates a <div> tag that holds the info passed as paraments
-// appends the div to the passed parentNode
+
+// 	makeInfoDiv(first, last, email, city, parentNode)
+// 	creates a <div> tag that holds the info passed as paraments
+// 	appends the div to the passed parentNode
 function makeInfoDiv(first, last, email, city, parentNode){
 	let infoDiv = document.createElement('div');
 	infoDiv.className = "card-info-container";
@@ -129,7 +137,7 @@ function makeInfoDiv(first, last, email, city, parentNode){
 //  MODAL HELPER FUNCTIONS
 // ------------------------------------------
 
-// createModal
+//  createModal()
 //  creates a black Modal that is hidden from the user 
 //  to be used later when cards are clicked
 function createModal() {
@@ -195,14 +203,16 @@ function createModal() {
 	
 }
 
-// updates the info on the Modal to pertain to the card that the user indicated 
-// they wanted to see.
-// called when a card is clicked and when a side scroller button on the modal is clicked
+
+// 	changeModal(id)
+// 	updates the info on the Modal to pertain to the card that the user indicated 
+// 	they wanted to see.
+// 	called when a card is clicked and when a side scroller button on the modal is clicked
+// 	id should be an integer between 0 and 11
 function changeModal(id){
 
 	document.querySelector(".modal-container").style.display = 'block';
 	
-	//var id = t.id;
 	document.querySelector(".modal-container").id = id;
 	document.getElementById("name").innerHTML = 
 		cardArray[id].first + " " + cardArray[id].last;
@@ -215,16 +225,41 @@ function changeModal(id){
 
 }
 
-// close Modal
+
+//	hideModal()
+// 	closes Modal box
 function hideModal(){
 	document.querySelector(".modal-container").style.display = 'none';
 }
+
+
+// 	scrollModal(ID, direction)
+// 	called by the prev and next scrolling buttons on the modal
+// 	finds the next or prev non-hidden card to display
+// 	direction should either be 'prev' or 'next'
+// 	ID should be an integer 
+function scrollModal(ID, direction){
+
+	if (cardArray[ID].cardHandle.style.display != 'none') {
+		changeModal(ID);
+	}
+	// if the ID called is hidden, look for the next or prev card that isn't hidden
+	else if (direction == 'prev' && ID-- > 0){
+		scrollModal(ID--, 'prev');
+	}
+	else if (direction == 'next' && ID++ < 11){
+		scrollModal(ID++, 'next');
+	}
+}
+
 
 
 // ------------------------------------------
 //  SEARCH HELPER FUNCTIONS
 // ------------------------------------------
 
+// 	createSearch()
+// 	makes the search form adds it the document
 function createSearch(){
 	let searchForm = document.createElement('form');
 	searchForm.action = "#";
@@ -237,17 +272,22 @@ function createSearch(){
 	
 }
 
+
+
+// 	search()
+// 	called when the search submit button is pressed
+// 	if the search box is empty, all results are displayed
+// 	all employees whose names contain the string entered by the user will be displayed
+// 	all others will be hidden
 function search(){
 	
 	// get user Search criteria
 	userInput = document.getElementById("search-input").value;
-	console.log("**" + userInput + "***")
 	userInput = userInput.trim();
 	
 	if (userInput.length !== 'undefined' && userInput.length !== 0 ){ // if the search value is empty
-		console.log(userInput.length);
 		userInput = userInput.toLowerCase();
-		console.log("**" + userInput + "***")
+		
 		//compare the search criteria to the Employee Names
 		// If the Employee Name does not match the search, hide the card.
 		cardArray.forEach((person) => {
@@ -264,7 +304,6 @@ function search(){
 			person.cardHandle.style.display = 'flex';
 		});
 	}
-	
 }
 
 
@@ -272,16 +311,18 @@ function search(){
 // ------------------------------------------
 //  EVENT LISTENERS
 // ------------------------------------------
+
+// listens for all clicks within the gallery, including the cards and the modal box
 gallery.addEventListener('click', event => eventRouter(event.target));
 
 
 // ------------------------------------------
 //  EVENT HELPER FUNCTIONS
 // ------------------------------------------
+
+// eventRouter(t)
 // when a click happens, figure out what action needs to take placehold
-// if the 
 function eventRouter(t){
-//console.log(t);
 
 	//user clicked a card, create a modal box
 	if (t.className == "card")
@@ -300,16 +341,17 @@ function eventRouter(t){
 	else if (t.className == "modal-prev btn"){
 		let ID = parseInt(t.parentNode.parentNode.id) - 1;
 		if (ID >= 0) 
-			changeModal(ID);
+			scrollModal(ID, 'prev');
 	}
-	else if (t.className == "modal-next btn"){
+	else if (t.className == "modal-next btn"){	
 		let ID = parseInt(t.parentNode.parentNode.id) +1;
 		if (ID <= 11) 
-			changeModal(ID);		
+			scrollModal(ID, 'next');		
 	}
 
 	//else ignore all other clicks
 }
+
 
 
 
